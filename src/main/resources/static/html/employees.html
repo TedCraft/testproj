@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../style/style.css">
+</head>
+<body>
+
+<h2>Employees table</h2>
+
+<select id="search">
+    <option selected="selected">Emp No</option>
+    <option>Dept No</option>
+    <option>Full Name</option>
+</select>
+<input id="emp_search_field">
+<button onclick="searchBy()">Search</button>
+<button onclick="loadEmployees()">Refresh</button>
+
+<table id="employeeList"></table>
+
+<input id="deptNo" placeholder="Dept no">
+<input id="firstName" placeholder="First name">
+<input id="lastName" placeholder="Last name">
+<input id="hireDate" placeholder="Hire date">
+<input id="salary" placeholder="Salary">
+<button onclick="createEmployee()">Create employee</button>
+
+<script src="../scripts/employee.js"></script>
+</body>
+</html>
