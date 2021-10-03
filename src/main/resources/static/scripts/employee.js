@@ -128,19 +128,37 @@ function searchBy() {
     loadFunction(http);
     switch (searchOption) {
         case "Emp No":
-            http.open("GET", "http://localhost:8080/employees/" + value, true);
+            http.open("GET", "http://localhost:8080/employees/" + value, false);
             break;
         case "Dept No":
-            http.open("GET", "http://localhost:8080/departments/" + value + "/employees", true);
+            http.open("GET", "http://localhost:8080/departments/" + value + "/employees", false);
             break;
         case "Full Name":
             let fullName = value.split(" ");
-            http.open("GET", "http://localhost:8080/employees/?name=" + fullName[0] + "&lastname=" + fullName[1], true);
+            if(fullName[0] === "") {
+                alert("Enter the First name!");
+                return;
+            }
+            else if(fullName[1] === "") {
+                alert("Enter the Last name!");
+                return;
+            }
+            http.open("GET", "http://localhost:8080/employees/?name=" + fullName[0] + "&lastname=" + fullName[1], false);
             break;
         default:
             return;
     }
     http.send();
+
+    let response = JSON.parse(http.responseText);
+    if (response.error !== undefined) {
+        if (response.message.includes("Integer")) {
+            alert("Wrong type of " + searchOption + "!");
+        }
+        else {
+            alert(response.message);
+        }
+    }
 }
 
 document.getElementById("employeeList").addEventListener('click', function(evt){

@@ -101,8 +101,17 @@ function searchByDeptNo() {
     let value = document.getElementById("dept_search_field").value;
     let http = new XMLHttpRequest();
     loadFunction(http);
-    http.open("GET", "http://localhost:8080/departments/" + value, true);
+    http.open("GET", "http://localhost:8080/departments/" + value, false);
     http.send();
+
+    let response = JSON.parse(http.responseText);
+    if (response.error !== undefined) {
+        if (response.message.includes("Integer")) {
+            alert("Wrong type of Dept No!");
+        } else {
+            alert(response.message);
+        }
+    }
 }
 
 document.getElementById("departmentList").addEventListener('click', function(evt){
