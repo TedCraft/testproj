@@ -1,12 +1,14 @@
+const hostname = "192.168.1.48:80"
+
 function deleteDepartment(empNo) {
     let http = new XMLHttpRequest();
-    http.open("DELETE", "http://localhost:8080/departments/" + empNo, false);
+    http.open("DELETE", `http://${hostname}/departments/` + empNo, false);
     http.send();
 }
 
 function updateDepartment(deptNo, name, budget) {
     let http = new XMLHttpRequest();
-    http.open("POST", "http://localhost:8080/departments/" + deptNo, false);
+    http.open("POST", `http://${hostname}/departments/` + deptNo, false);
     http.setRequestHeader("Content-Type", "application/json");
     http.send(JSON.stringify({
         name: name,
@@ -42,7 +44,7 @@ function createDepartment() {
     let budget = document.getElementById("budget").value;
 
     let http = new XMLHttpRequest();
-    http.open("POST", "http://localhost:8080/departments", false);
+    http.open("POST", `http://${hostname}/departments`, false);
     http.setRequestHeader("Content-Type", "application/json");
     http.send(JSON.stringify({
         name: name,
@@ -93,7 +95,7 @@ function loadFunction(http) {
 function loadDepartments() {
     let http = new XMLHttpRequest();
     loadFunction(http);
-    http.open("GET", "http://localhost:8080/departments", true);
+    http.open("GET", `http://${hostname}/departments`, true);
     http.send();
 }
 
@@ -101,7 +103,7 @@ function searchByDeptNo() {
     let value = document.getElementById("dept_search_field").value;
     let http = new XMLHttpRequest();
     loadFunction(http);
-    http.open("GET", "http://localhost:8080/departments/" + value, false);
+    http.open("GET", `http://${hostname}/departments/` + value, false);
     http.send();
 
     let response = JSON.parse(http.responseText);

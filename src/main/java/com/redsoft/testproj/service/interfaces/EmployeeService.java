@@ -1,7 +1,6 @@
 package com.redsoft.testproj.service.interfaces;
 
 import com.redsoft.testproj.dto.EmployeeDTO;
-import com.redsoft.testproj.entity.Employee;
 
 import java.util.List;
 

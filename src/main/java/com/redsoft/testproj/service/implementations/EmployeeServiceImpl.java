@@ -3,19 +3,19 @@ package com.redsoft.testproj.service.implementations;
 import com.redsoft.testproj.dto.EmployeeDTO;
 import com.redsoft.testproj.entity.Employee;
 import com.redsoft.testproj.repository.EmployeeRepository;
+import com.redsoft.testproj.service.interfaces.DepartmentService;
 import com.redsoft.testproj.service.interfaces.EmployeeService;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.cache.interceptor.*;
-import java.util.stream.Collectors;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -25,7 +25,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
 
-    private void validateEmployeeDto(EmployeeDTO employeeDTO) throws ResponseStatusException {
+    private void checkIsNull(EmployeeDTO employeeDTO)
+            throws ResponseStatusException {
         if (isNull(employeeDTO)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Table cannot be null!");
         }
@@ -43,6 +44,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         if (isNull(employeeDTO.getSalary())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Enter the Salary!");
+        }
+    }
+
+    private void validateEmployeeDto(EmployeeDTO employeeDTO)
+            throws ResponseStatusException {
+        checkIsNull(employeeDTO);
+        if (!employeeDTO.getFirstName().matches("[a-zA-Zа-яА-ЯёЁ]+")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "First name must contains only letters!");
+        }
+        if (!employeeDTO.getLastName().matches("[a-zA-Zа-яА-ЯёЁ]+")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Last name must contains only letters!");
+        }
+        if (employeeDTO.getSalary() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Salary cannot be negative");
         }
     }
 
@@ -70,10 +85,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @CacheEvict(cacheNames = "employeesCache", key="'findAllEmployees'")
-    public EmployeeDTO saveEmployee(EmployeeDTO employeeDTO) throws ResponseStatusException {
+    public EmployeeDTO saveEmployee(EmployeeDTO employeeDTO)
+            throws ResponseStatusException {
         validateEmployeeDto(employeeDTO);
-        Employee savedEmployee = employeeRepository.save(fromDtoToEmployee(employeeDTO));
-        return fromEmployeeToDto(savedEmployee);
+        try {
+            Employee savedEmployee = employeeRepository.save(fromDtoToEmployee(employeeDTO));
+            return fromEmployeeToDto(savedEmployee);
+        }
+        catch (DataIntegrityViolationException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot find Department!");
+        }
     }
 
     @Override
@@ -85,13 +106,15 @@ public class EmployeeServiceImpl implements EmployeeService {
                     @CacheEvict(cacheNames = "employeesCache", key="#employeeDTO.lastName")
             }
     )
-    public void deleteEmployee(EmployeeDTO employeeDTO) throws ResponseStatusException {
+    public void deleteEmployee(EmployeeDTO employeeDTO)
+            throws ResponseStatusException {
         employeeRepository.deleteById(employeeDTO.getEmpNo());
     }
 
     @Override
     @Cacheable(cacheNames = "employeesCache", key="#deptNo")
-    public List<EmployeeDTO> findEmployeesByDeptNo(Integer deptNo) throws ResponseStatusException {
+    public List<EmployeeDTO> findEmployeesByDeptNo(Integer deptNo)
+            throws ResponseStatusException {
         List<EmployeeDTO> employeeDTOList = employeeRepository.findAllByDeptNo(deptNo)
                 .stream()
                 .map(this::fromEmployeeToDto)
@@ -106,7 +129,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Cacheable(cacheNames = "employeesCache", key="'findAllEmployees'")
-    public List<EmployeeDTO> findAllEmployees() {
+    public List<EmployeeDTO> findAllEmployees()
+            throws ResponseStatusException {
         List<EmployeeDTO> employeeDTOList = employeeRepository.findAll()
                 .stream()
                 .map(this::fromEmployeeToDto)
@@ -121,7 +145,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Cacheable(cacheNames = "employeesCache", key="#empNo")
-    public List<EmployeeDTO> findEmployeesByEmpNo(Integer empNo) throws ResponseStatusException {
+    public List<EmployeeDTO> findEmployeesByEmpNo(Integer empNo)
+            throws ResponseStatusException {
         List<EmployeeDTO> employeeDTO = employeeRepository.findOneByEmpNo(empNo)
                 .stream()
                 .map(this::fromEmployeeToDto)
@@ -136,7 +161,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Cacheable(cacheNames = "employeesCache", key="#lastName")
-    public List<EmployeeDTO> findEmployeesByFirstNameAndLastName(String firstName, String lastName) {
+    public List<EmployeeDTO> findEmployeesByFirstNameAndLastName(String firstName, String lastName)
+            throws ResponseStatusException {
         List<EmployeeDTO> employeeDTOList = employeeRepository.findAllByFirstNameAndLastNameAllIgnoreCase(firstName, lastName)
                 .stream()
                 .map(this::fromEmployeeToDto)

@@ -1,12 +1,14 @@
+const hostname = "192.168.1.48:80"
+
 function deleteEmployee(empNo) {
     let http = new XMLHttpRequest();
-    http.open("DELETE", "http://localhost:8080/employees/" + empNo, false);
+    http.open("DELETE", `http://${hostname}/employees/` + empNo, false);
     http.send();
 }
 
 function updateEmployee(empNo, deptNo, firstName, lastName, hireDate, salary) {
     let http = new XMLHttpRequest();
-    http.open("POST", "http://localhost:8080/employees/" + empNo, false);
+    http.open("POST", `http://${hostname}/employees/` + empNo, false);
     http.setRequestHeader("Content-Type", "application/json");
     http.send(JSON.stringify({
         deptNo: deptNo,
@@ -54,7 +56,7 @@ function createEmployee() {
     let salary = document.getElementById("salary").value;
 
     let http = new XMLHttpRequest();
-    http.open("POST", "http://localhost:8080/employees", false);
+    http.open("POST", `http://${hostname}/employees`, false);
     http.setRequestHeader("Content-Type", "application/json");
     http.send(JSON.stringify({
         deptNo: deptNo,
@@ -117,7 +119,7 @@ function loadFunction(http) {
 function loadEmployees() {
     let http = new XMLHttpRequest();
     loadFunction(http);
-    http.open("GET", "http://localhost:8080/employees", true);
+    http.open("GET", `http://${hostname}/employees`, true);
     http.send();
 }
 
@@ -128,10 +130,10 @@ function searchBy() {
     loadFunction(http);
     switch (searchOption) {
         case "Emp No":
-            http.open("GET", "http://localhost:8080/employees/" + value, false);
+            http.open("GET", `http://${hostname}/employees/` + value, false);
             break;
         case "Dept No":
-            http.open("GET", "http://localhost:8080/departments/" + value + "/employees", false);
+            http.open("GET", `http://${hostname}/departments/` + value + "/employees", false);
             break;
         case "Full Name":
             let fullName = value.split(" ");
@@ -143,7 +145,7 @@ function searchBy() {
                 alert("Enter the Last name!");
                 return;
             }
-            http.open("GET", "http://localhost:8080/employees/?name=" + fullName[0] + "&lastname=" + fullName[1], false);
+            http.open("GET", `http://${hostname}/employees/?name=` + fullName[0] + "&lastname=" + fullName[1], false);
             break;
         default:
             return;

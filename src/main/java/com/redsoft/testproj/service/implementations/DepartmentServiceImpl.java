@@ -1,6 +1,7 @@
 package com.redsoft.testproj.service.implementations;
 
 import com.redsoft.testproj.dto.DepartmentDTO;
+import com.redsoft.testproj.dto.EmployeeDTO;
 import com.redsoft.testproj.entity.Department;
 import com.redsoft.testproj.repository.DepartmentRepository;
 import com.redsoft.testproj.service.interfaces.DepartmentService;
@@ -23,7 +24,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private final DepartmentRepository departmentRepository;
 
-    private void validateDepartmentDto(DepartmentDTO departmentDTO) throws ResponseStatusException {
+    private void checkIsNull(DepartmentDTO departmentDTO)
+            throws ResponseStatusException {
         if (isNull(departmentDTO)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Table cannot be null!");
         }
@@ -32,6 +34,17 @@ public class DepartmentServiceImpl implements DepartmentService {
         }
         if (isNull(departmentDTO.getBudget())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Enter the budget!");
+        }
+    }
+
+    private void validateDepartmentDto(DepartmentDTO departmentDTO)
+            throws ResponseStatusException {
+        checkIsNull(departmentDTO);
+        if (!departmentDTO.getName().matches("[a-zA-Zа-яА-ЯёЁ]+")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must contains only letters!");
+        }
+        if (departmentDTO.getBudget() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Budget cannot be negative");
         }
     }
 
@@ -72,7 +85,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     @Cacheable(cacheNames = "departmentsCache", key="#deptNo")
-    public List<DepartmentDTO> findDepartmentByDeptNo(Integer deptNo) {
+    public List<DepartmentDTO> findDepartmentByDeptNo(Integer deptNo)
+            throws ResponseStatusException {
         List<DepartmentDTO> departmentDTOList = departmentRepository.findOneByDeptNo(deptNo)
                 .stream()
                 .map(this::fromDepartmentToDto)
@@ -87,7 +101,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     @Cacheable(cacheNames = "departmentsCache", key="'findAllDepartments'")
-    public List<DepartmentDTO> findAllDepartments() {
+    public List<DepartmentDTO> findAllDepartments()
+            throws ResponseStatusException {
         List<DepartmentDTO> departmentDTOList = departmentRepository.findAll()
                 .stream()
                 .map(this::fromDepartmentToDto)

@@ -10,6 +10,7 @@ public class TestprojApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(TestprojApplication.class, args);
+        Init init = new Init();
+        init.createDb();
     }
-
 }
