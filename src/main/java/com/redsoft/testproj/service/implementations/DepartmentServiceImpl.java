@@ -40,9 +40,6 @@ public class DepartmentServiceImpl implements DepartmentService {
     private void validateDepartmentDto(DepartmentDTO departmentDTO)
             throws ResponseStatusException {
         checkIsNull(departmentDTO);
-        if (!departmentDTO.getName().matches("[a-zA-Zа-яА-ЯёЁ]+")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name must contains only letters!");
-        }
         if (departmentDTO.getBudget() < 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Budget cannot be negative");
         }
@@ -101,16 +98,11 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     @Cacheable(cacheNames = "departmentsCache", key="'findAllDepartments'")
-    public List<DepartmentDTO> findAllDepartments()
-            throws ResponseStatusException {
+    public List<DepartmentDTO> findAllDepartments() {
         List<DepartmentDTO> departmentDTOList = departmentRepository.findAll()
                 .stream()
                 .map(this::fromDepartmentToDto)
                 .collect(Collectors.toList());
-
-        if (departmentDTOList.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Departments not found!");
-        }
 
         return departmentDTOList;
     }

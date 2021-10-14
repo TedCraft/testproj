@@ -6,6 +6,7 @@ import com.redsoft.testproj.repository.EmployeeRepository;
 import com.redsoft.testproj.service.interfaces.DepartmentService;
 import com.redsoft.testproj.service.interfaces.EmployeeService;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -61,7 +62,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
-    private EmployeeDTO fromEmployeeToDto(Employee employee) {
+    public EmployeeDTO fromEmployeeToDto(Employee employee) {
         return EmployeeDTO.builder()
                 .empNo(employee.getEmpNo())
                 .deptNo(employee.getDeptNo())
@@ -72,7 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .build();
     }
 
-    private Employee fromDtoToEmployee(EmployeeDTO employeeDTO) {
+    public Employee fromDtoToEmployee(EmployeeDTO employeeDTO) {
         return Employee.builder()
                 .empNo(employeeDTO.getEmpNo())
                 .deptNo(employeeDTO.getDeptNo())
@@ -129,16 +130,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Cacheable(cacheNames = "employeesCache", key="'findAllEmployees'")
-    public List<EmployeeDTO> findAllEmployees()
-            throws ResponseStatusException {
+    public List<EmployeeDTO> findAllEmployees() {
         List<EmployeeDTO> employeeDTOList = employeeRepository.findAll()
                 .stream()
                 .map(this::fromEmployeeToDto)
                 .collect(Collectors.toList());
-
-        if (employeeDTOList.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Employees not found!");
-        }
 
         return employeeDTOList;
     }
@@ -163,6 +159,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Cacheable(cacheNames = "employeesCache", key="#lastName")
     public List<EmployeeDTO> findEmployeesByFirstNameAndLastName(String firstName, String lastName)
             throws ResponseStatusException {
+        if (!firstName.matches("[a-zA-Zа-яА-ЯёЁ]+")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "First name must contains only letters!");
+        }
+        if (!lastName.matches("[a-zA-Zа-яА-ЯёЁ]+")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Last name must contains only letters!");
+        }
         List<EmployeeDTO> employeeDTOList = employeeRepository.findAllByFirstNameAndLastNameAllIgnoreCase(firstName, lastName)
                 .stream()
                 .map(this::fromEmployeeToDto)

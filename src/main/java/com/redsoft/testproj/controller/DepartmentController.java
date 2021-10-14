@@ -22,8 +22,7 @@ public class DepartmentController {
     }
 
     @GetMapping(value = "/departments")
-    public List<DepartmentDTO> read()
-            throws ResponseStatusException {
+    public List<DepartmentDTO> read() {
         return departmentService.findAllDepartments();
     }
 

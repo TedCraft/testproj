@@ -22,8 +22,7 @@ public class EmployeeController {
     }
 
     @GetMapping(value = "/employees")
-    public List<EmployeeDTO> read()
-            throws ResponseStatusException {
+    public List<EmployeeDTO> read() {
         return employeeService.findAllEmployees();
     }
 
