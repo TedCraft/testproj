@@ -9,26 +9,26 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "employee")
+@Table(name = "EMPLOYEE")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee {
     @Id
-    @Column(name = "emp_no", nullable = false)
+    @Column(name = "EMP_NO", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer empNo;
 
-    @Column(name = "dept_no", nullable = false)
+    @Column(name = "DEPT_NO", nullable = false)
     private Integer deptNo;
 
-    @Column(name = "first_name")
+    @Column(name = "FIRST_NAME")
     private String firstName;
-    @Column(name = "last_name")
+    @Column(name = "LAST_NAME")
     private String lastName;
-    @Column(name = "hire_date")
+    @Column(name = "HIRE_DATE")
     private Timestamp hireDate;
-    @Column(name = "salary")
+    @Column(name = "SALARY")
     private Float salary;
 }

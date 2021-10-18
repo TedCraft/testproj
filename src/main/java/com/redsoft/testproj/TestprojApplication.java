@@ -9,8 +9,8 @@ import org.springframework.cache.annotation.EnableCaching;
 public class TestprojApplication {
 
     public static void main(String[] args) {
+        //Init init = new Init();
+        //init.createDb();
         SpringApplication.run(TestprojApplication.class, args);
-        Init init = new Init();
-        init.createDb();
     }
 }

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "department")
+@Table(name = "DEPARTMENT")
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,11 +16,11 @@ import javax.persistence.*;
 public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "dept_no", nullable = false)
+    @Column(name = "DEPT_NO", nullable = false)
     private Integer deptNo;
 
-    @Column(name = "name")
+    @Column(name = "NAME")
     private String name;
-    @Column(name = "budget")
+    @Column(name = "BUDGET")
     private Float budget;
 }
