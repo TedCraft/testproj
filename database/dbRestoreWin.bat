@@ -1,3 +1,3 @@
 @echo off
 
-nbackup -user SYSDBA -pas masterkey -R TESTPROJDB.FDB TESTPROJBACK.nbk
+gbak -user SYSDBA -pas masterkey -r TESTPROJBACK.bak TESTPROJDB.FDB
